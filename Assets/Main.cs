@@ -1,7 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Main : MonoBehaviour
 {
+    private Texture[] textures;
+    private int frameCounter = 0;
+    private Material _doorMaterial;
+    private bool CloseOpen = false; // false == open
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,8 +28,74 @@ public class Main : MonoBehaviour
             new Vector2(1, 1),
             new Vector2(1, 0),
         };
-
         AddWall("door13_0", vertices0, uvs0);
+
+        var textureList = Resources.LoadAll("Textures/door13", typeof(Texture));
+        textures = new Texture[textureList.Length];
+
+        for (var i = 0; i < textureList.Length; i++)
+        {
+            textures[i] = (Texture)textureList[i];
+        }        
+    }
+
+    void Awake()
+    {
+        //_doorMaterial.mainTexture = textures[frameCounter];
+    }
+
+    //http://www.41post.com/4726/programming/unity-animated-texture-from-image-sequence-part-1
+    void Update()
+    {
+        StartCoroutine("PlayLoop", 0.10f);
+        _doorMaterial.mainTexture = textures[frameCounter];
+    }
+
+    //The following methods return a IEnumerator so they can be yielded:  
+    //A method to play the animation in a loop  
+    IEnumerator PlayLoop(float delay)
+    {
+        //Wait for the time defined at the delay parameter  
+        yield return new WaitForSeconds(delay);
+
+        if (CloseOpen && frameCounter == 0)
+        {
+            CloseOpen = !CloseOpen;
+        }
+
+        if (!CloseOpen && frameCounter == textures.Length - 1)
+        {
+            CloseOpen = !CloseOpen;
+        }
+
+        if (CloseOpen)
+        {
+            frameCounter--;
+        }
+        else
+        {
+            frameCounter++;
+        }
+
+        //Stop this co-routine  
+        StopCoroutine("PlayLoop");
+    }
+
+    //A method to play the animation just once  
+    IEnumerator Play(float delay)
+    {
+        //Wait for the time defined at the delay parameter  
+        yield return new WaitForSeconds(delay);
+
+        //If the frame counter isn't at the last frame  
+        if (frameCounter < textures.Length - 1)
+        {
+            //Advance one frame  
+            ++frameCounter;
+        }
+
+        //Stop this coroutine  
+        StopCoroutine("PlayLoop");
     }
 
     private void AddWall(string textureName, Vector3[] vertices, Vector2[] uvs)
@@ -34,29 +106,29 @@ public class Main : MonoBehaviour
             2, 3, 0,
         };
 
-        var o = new GameObject();
-        Instantiate(o);
+        var _door = new GameObject();
+        Instantiate(_door);
 
         var mesh = new Mesh();
         var meshFilter =
             (UnityEngine.MeshFilter)
-            o.AddComponent(typeof(MeshFilter));
+            _door.AddComponent(typeof(MeshFilter));
         meshFilter.mesh = mesh;
 
         // mesh renderer
         var meshRenderer =
             (UnityEngine.MeshRenderer)
-            o.AddComponent(typeof(MeshRenderer));
+            _door.AddComponent(typeof(MeshRenderer));
 
-        var material = new Material(Shader.Find("Diffuse"));
+        _doorMaterial = new Material(Shader.Find("Transparent/Diffuse"));
         meshRenderer.materials = new Material[1];
-        meshRenderer.materials[0] = material;
+        meshRenderer.materials[0] = _doorMaterial;
 
-        //Load a Texture (Assets/Resources/Textures/texture01.png)
         var texture = Resources.Load<Texture2D>($"Textures/{textureName}");
-        material.mainTexture = texture;
 
-        meshRenderer.material = material;
+        _doorMaterial.mainTexture = texture;
+
+        meshRenderer.material = _doorMaterial;
 
         mesh.Clear();
         mesh.vertices = vertices;
