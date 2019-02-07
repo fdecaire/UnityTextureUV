@@ -8,7 +8,9 @@ public class Main : MonoBehaviour
     private Material _doorMaterial;
     private bool CloseOpen = false; // false == open
 
-    // Start is called before the first frame update
+    // animated texture
+    // http://www.41post.com/4726/programming/unity-animated-texture-from-image-sequence-part-1
+    //
     void Start()
     {
         float size = 1f;
@@ -44,7 +46,6 @@ public class Main : MonoBehaviour
         //_doorMaterial.mainTexture = textures[frameCounter];
     }
 
-    //http://www.41post.com/4726/programming/unity-animated-texture-from-image-sequence-part-1
     void Update()
     {
         StartCoroutine("PlayLoop", 0.10f);
@@ -81,23 +82,6 @@ public class Main : MonoBehaviour
         StopCoroutine("PlayLoop");
     }
 
-    //A method to play the animation just once  
-    IEnumerator Play(float delay)
-    {
-        //Wait for the time defined at the delay parameter  
-        yield return new WaitForSeconds(delay);
-
-        //If the frame counter isn't at the last frame  
-        if (frameCounter < textures.Length - 1)
-        {
-            //Advance one frame  
-            ++frameCounter;
-        }
-
-        //Stop this coroutine  
-        StopCoroutine("PlayLoop");
-    }
-
     private void AddWall(string textureName, Vector3[] vertices, Vector2[] uvs)
     {
         int[] triangles =
@@ -106,19 +90,19 @@ public class Main : MonoBehaviour
             2, 3, 0,
         };
 
-        var _door = new GameObject();
-        Instantiate(_door);
+        var door = new GameObject();
+        Instantiate(door);
 
         var mesh = new Mesh();
         var meshFilter =
             (UnityEngine.MeshFilter)
-            _door.AddComponent(typeof(MeshFilter));
+            door.AddComponent(typeof(MeshFilter));
         meshFilter.mesh = mesh;
 
         // mesh renderer
         var meshRenderer =
             (UnityEngine.MeshRenderer)
-            _door.AddComponent(typeof(MeshRenderer));
+            door.AddComponent(typeof(MeshRenderer));
 
         _doorMaterial = new Material(Shader.Find("Transparent/Diffuse"));
         meshRenderer.materials = new Material[1];
