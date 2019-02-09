@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    private Texture[] textures;
-    private int frameCounter = 0;
+    private Texture[] _textures;
+    private int _frameCounter = 0;
     private Material _doorMaterial;
-    private bool CloseOpen = false; // false == open
+    private bool _closeOpen = false; // false == open
 
     // animated texture
     // http://www.41post.com/4726/programming/unity-animated-texture-from-image-sequence-part-1
@@ -33,23 +33,18 @@ public class Main : MonoBehaviour
         AddWall("door13_0", vertices0, uvs0);
 
         var textureList = Resources.LoadAll("Textures/door13png", typeof(Texture));
-        textures = new Texture[textureList.Length];
+        _textures = new Texture[textureList.Length];
 
         for (var i = 0; i < textureList.Length; i++)
         {
-            textures[i] = (Texture)textureList[i];
+            _textures[i] = (Texture)textureList[i];
         }        
-    }
-
-    void Awake()
-    {
-        //_doorMaterial.mainTexture = textures[frameCounter];
     }
 
     void Update()
     {
         StartCoroutine("PlayLoop", 0.10f);
-        _doorMaterial.mainTexture = textures[frameCounter];
+        _doorMaterial.mainTexture = _textures[_frameCounter];
     }
 
     //The following methods return a IEnumerator so they can be yielded:  
@@ -59,23 +54,23 @@ public class Main : MonoBehaviour
         //Wait for the time defined at the delay parameter  
         yield return new WaitForSeconds(delay);
 
-        if (CloseOpen && frameCounter == 0)
+        if (_closeOpen && _frameCounter == 0)
         {
-            CloseOpen = !CloseOpen;
+            _closeOpen = !_closeOpen;
         }
 
-        if (!CloseOpen && frameCounter == textures.Length - 1)
+        if (!_closeOpen && _frameCounter == _textures.Length - 1)
         {
-            CloseOpen = !CloseOpen;
+            _closeOpen = !_closeOpen;
         }
 
-        if (CloseOpen)
+        if (_closeOpen)
         {
-            frameCounter--;
+            _frameCounter--;
         }
         else
         {
-            frameCounter++;
+            _frameCounter++;
         }
 
         //Stop this co-routine  
