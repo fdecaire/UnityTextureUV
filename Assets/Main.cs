@@ -32,7 +32,7 @@ public class Main : MonoBehaviour
         };
         AddWall("door13_0", vertices0, uvs0);
 
-        var textureList = Resources.LoadAll("Textures/door13", typeof(Texture));
+        var textureList = Resources.LoadAll("Textures/door13png", typeof(Texture));
         textures = new Texture[textureList.Length];
 
         for (var i = 0; i < textureList.Length; i++)
