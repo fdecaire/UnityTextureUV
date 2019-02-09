@@ -47,8 +47,6 @@ public class Main : MonoBehaviour
         _doorMaterial.mainTexture = _textures[_frameCounter];
     }
 
-    //The following methods return a IEnumerator so they can be yielded:  
-    //A method to play the animation in a loop  
     IEnumerator PlayLoop(float delay)
     {
         //Wait for the time defined at the delay parameter  
